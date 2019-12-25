@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Task</title>
+	<link rel="stylesheet" href="app.css">
+	<script src="http://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<link rel="stylesheet" href="form-validation.css">
+	<h1>Заметки</h1>
+</head>
+<body>
+
+	<div id="vueapp">
+		<div class="menu">
+			<div>
+				<div>
+					<input type="radio" value="true" v-model="modeActive">
+					<label>Actived</label>
+					<input type="radio" value="false" v-model="modeActive">
+					<label>Deleted</label>
+				</div>
+				<button @click="del" class="btn btn-danger">Delete</button>
+			</div>
+			<ul id="navbar" v-if="modeActive == 'true'">
+				<li style="list-style: none;" v-for="task in tasks" v-if="!task.delete"><input type="checkbox" id="checkbox" v-model="task.delete" v-if="modeDelete"><button @click="showTask(task)">{{ task.name }}</button></li>
+			</ul>
+			<ul id="navbar" v-if="modeActive == 'false'">
+				<li style="list-style: none;" v-for="task in tasks" v-if="task.delete"><input type="checkbox" id="checkbox" v-model="task.delete" v-if="modeDelete"><button @click="showTask(task)">{{ task.name }}</button></li>
+			</ul>
+			<button @click="showNewForm" class="btn btn-primary">Add</button>
+		</div>
+		<form v-if="formIsShow" class="content container" style="margin-right: 20%" v-on:submit="save">	
+			<div id="centerLayer">
+				<input type="text" name="name" placeholder="Enter name task" v-model="newTask.name" class="form-control">
+			</div>
+			<div id="centerLayer">
+				<select v-model="newTask.theme" class="form-control">
+			        <option>Home</option>
+			        <option>Travels</option>
+			        <option>Work</option>
+			    </select>
+			</div>
+			<div id="centerLayer">
+				<textarea class="form-control" placeholder="Enter task" v-model="newTask.text"></textarea>
+			</div>
+			<div id="centerLayer">
+				<button type="submit" class="btn btn-primary" style="margin-left: 50%">Save</button>
+			</div>
+		</form>
+
+		<form v-if="taskIsShow" class="content container" class="content container" style="margin-right: 20%" v-on:submit="exit">	
+			<div id="centerLayer">
+				<input type="text" name="name" placeholder="Enter name task" v-model="editTask.name" class="form-control">
+			</div>
+			<div id="centerLayer">
+				<select v-model="editTask.theme" class="form-control">
+			        <option>Home</option>
+			        <option>Travels</option>
+			        <option>Work</option>
+			    </select>
+			</div>
+			<div id="centerLayer">
+				<textarea placeholder="Enter task" v-model="editTask.text" class="form-control"></textarea>
+			</div>
+			<div id="centerLayer">
+				<button type="submit" class="btn btn-primary" style="margin-left: 50%">Exit</button>
+			</div>
+		</form>
+	</div>
+
+	<script>
+		let app = new Vue({
+			el: '#vueapp',
+			data: {
+				formIsShow: false,
+				taskIsShow: false,
+				newTask: {
+					id: 0,
+					name: '',
+					text: '',
+					theme: '',
+					delete: false
+				},
+				editTask: {
+					id: 0,
+					name: '',
+					text: '',
+					theme: ''
+				},
+				tasks: [
+					{ id: 0, name: 'Task1', text: 'Do homework', theme: '', delete: false},
+					{ id: 1, name: 'Task2', text: 'Wash up', theme: '', delete: false}
+				],
+				count: 2,
+				modeActive: 'true',
+				modeDelete: false
+			},
+			methods: {
+				showNewForm: function() {
+					this.taskIsShow = false;
+					this.formIsShow = true;
+				},
+
+				save: function() {
+					let newTask = {
+						id: this.count,
+						name: this.newTask.name,
+						text: this.newTask.text,
+						theme: this.newTask.theme
+					}
+					this.tasks.push(newTask);
+					this.count++;
+					this.newTask.name = '';
+					this.newTask.text = '';
+					this.newTask.theme = '';
+					this.formIsShow = false;
+				},
+
+				showTask(taskname) {
+					// this.taskIsShow = false;
+					this.formIsShow = false;
+					this.taskIsShow = true;
+					this.editTask.id = taskname.id;
+					this.editTask.name = taskname.name;
+					this.editTask.theme = taskname.theme;
+					this.editTask.text = taskname.text;
+				},
+
+				exit: function() {
+					this.taskIsShow = false;
+				},
+
+				del: function() {
+					this.modeDelete = !this.modeDelete;
+				}
+			}
+		})
+	</script>
+</body>
+</html>
